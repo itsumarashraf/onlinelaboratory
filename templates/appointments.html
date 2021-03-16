@@ -1,0 +1,501 @@
+{% extends 'userbase.html' %}
+{% block title %}Appointments{% endblock title %}
+
+
+{% block body %}
+
+
+
+<style>
+    .input-dob {
+        height: 40px;
+        padding: 10px;
+        border-color: rgb(109 109 109 / 15%);
+        border-radius: 5px;
+        color: grey;
+        width: 100%;
+    }
+
+    .input-dob:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+    }
+    .error{
+        color:red;
+        font-style: italic;
+    }
+    
+</style>
+
+<div class="container-fluid  bg-light p-5 mt-3">
+    <div class="row">
+        <div class="col-lg-8">
+
+            <h3 class="text-primary">Appointments</h3>
+            <hr>
+
+            <form method="POST" action="{% url 'aptsuccess' %}" id="aptform" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="patientname">Patient Name</label>
+                    <input type="text" class="form-control" id="patientname" name="patientname"
+                        placeholder="Enter you name">
+                </div>
+
+                <div class="form-check-inline ">
+                    <p>Gender</p>
+                </div>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+                    <label class="form-check-label" for="male">Male</label>
+                </div>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="gender" id="female" value="Female">
+                    <label class="form-check-label" for="female">Female</label>
+                </div>
+                <div class="gen"></div>
+
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input class="input-dob"type="date" id="dob" name="dob">
+                </div>
+
+                <div class="form-group">
+                    <label for="ro">Address</label>
+                    <input class="form-control" type="text" id="ro" name="address" placeholder="Enter Address">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Mobile Number</label>
+                    <input type="phone" class="form-control" id="phone" name="phone" placeholder="Enter Mobile No">
+                </div>
+                <div class="form-group">
+                    <label for="prescription">Prescription (if Available)</label>
+                    <input type="file" class="form-control-file" name="file" id="prescription">
+                </div>
+                <div class="form-group">
+                    
+                    <input type="hidden" class="form-control-file" name="loggeduserid" value={{request.session.userid}} id="userid">
+                </div>
+                <br>
+                <br>
+
+                <!-- Available Test List -->
+                <p class="text-primary">Select Test</p>
+                <hr>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">S.NO</th>
+                            <th scope="col">TEST NAME</th>
+                            <th scope="col">PRICE</th>
+                            <th scope="col">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tbody>
+                        {% for testitem in testitems %}
+                        <tr>
+                            <th scope="row">{{forloop.counter}}</th>
+                            <td>{{ testitem.test_title }}</td>
+                            <td>{{ testitem.price }}</td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" class="{{ testitem.id }}" name="choice[]" value="{{ testitem.test_title }}">
+                                    <br>
+                                    <input type="checkbox" hidden class="{{ forloop.counter }}" name="price[]" value="{{ testitem.price }}">
+                                    
+                                    <script>
+                                        $('.{{ testitem.id }}').click(function() {
+                                        if ($(this).is(':checked')) {
+                                            $('.{{ forloop.counter }}').attr('checked', true);
+                                        } else {
+                                            $('.{{ forloop.counter }}').attr('checked', false);
+                                        }
+                                    });
+                                    </script>
+                                    
+                                  </div>
+                            </td>
+                        </tr>
+                        
+                        {% endfor %}
+                    </tbody>
+                    </tbody>
+                </table>
+                
+                <script>
+                    $(document).ready(function(){
+                        $('#aptform').on('submit',function(e){
+                            e.preventDefault();
+                            var frm = $('#aptform')
+                            frm.validate({
+                                    rules:{
+                                        patientname:{
+                                            required: true
+                                        },
+                                        gender:{
+                                            required:true
+                                        },
+                                        dob:{
+                                            required:true
+                                        },
+                                        address:{
+                                            required:true
+                                        },
+                                        email:{
+                                            required:true,
+                                            email:true
+                                        },
+                                        phone:{
+                                            required:true,
+                                            maxlength:10
+                                        }
+                                    },
+                                    messages:{
+                                        patientname:{
+                                            required:'Patinent name is required'
+                                        },
+                                        gender:{
+                                            required:'Please select gender'
+                                        },
+                                        dob:{
+                                            required:'Choose Date of Birth'
+                                        },
+                                        address:{
+                                            required:'Enter Your Address'
+                                        },
+                                        email:{
+                                            required:'Enter Your Email',
+                                            email: "Email is not valid"
+                                        },
+                                        phone:{
+                                            required:'Enter phone no',
+                                            maxlength:'Enter valid phone no'
+                                        }
+                                    },
+                                    errorPlacement:function(error,element){
+                                        if(element.is(":radio")){
+                                            error.appendTo(element.hasClass(".gen"));
+                                        }else{
+                                            error.insertAfter(element);
+                                        }
+                                    }
+                                });
+                                if (frm.valid()){
+                                    if ($("#aptform input:checkbox:checked").length > 0)
+                                        {
+                                            if(!$("input:checkbox[value='covid 19']").is(":checked")) {
+                                            $('#exampleModal').modal('show');}
+                                            else{
+                                                $("#aptform").unbind('submit').submit();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            alert('Please choose at least one test')
+                                        }
+                                    
+                                }                                
+                        });
+                        });
+                        
+                </script>
+                
+                <br>
+               
+                <button style="border-radius: 20px; padding:5px 20px 5px 20px;" type="submit"
+                    class="book btn btn-primary">Book</button>
+
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            </form>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Covid Prediction</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <!-- ################# form starts here ##################################### -->
+                    <div class="covidmsg" id="cmsg">
+                        <p>Dear User! <br> Due to current pandemic we are taking extra precaution to minimize the spread
+                            of corona virus by predicting covid-19 online using machine learning by asking some basic
+                            questions. <br>Before applying for booking Appointment you are request to answer these questions by clicking the below <i>Proceed</i> Button.
+                        </p>
+                        <button class="btn btn-primary" id="proceed">Proceed</button>
+                    </div>
+
+                    <style>
+                        #mdlform p{
+                            margin-bottom: 3px !important;
+                        }
+                    </style>
+                      <div class="covidform">
+                      <form id="mdlform" method="POST" action="">
+                        {% csrf_token %}
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Chose Gender?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="gen" id="gen" value="1">
+                                            <label class="form-check-label" for="gen">Male</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="gen" id="gen" value="0">
+                                            <label class="form-check-label" for="gen">Female</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Do you have Cough?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="cough" id="cough" value="1">
+                                            <label class="form-check-label" for="cough">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="cough" id="cough" value="0">
+                                            <label class="form-check-label" for="cough">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                    <tr>
+                                        <td>
+                                        <div class="form-check-inline ">
+                                            <p>Do you have Fever?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="fever" id="fever" value="1">
+                                            <label class="form-check-label" for="fever">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="fever" id="fever" value="0">
+                                            <label class="form-check-label" for="fever">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Do you have Sour Throat?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="sour" id="sour" value="1">
+                                            <label class="form-check-label" for="sour">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="sour" id="sour" value="0">
+                                            <label class="form-check-label" for="sour">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Do you have Shortness of Breath?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="breath" id="breath" value="1">
+                                            <label class="form-check-label" for="breath">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="breath" id="breath" value="0">
+                                            <label class="form-check-label" for="breath">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Do you have Head Ache?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="ache" id="ache" value="1">
+                                            <label class="form-check-label" for="ache">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="ache" id="ache" value="0">
+                                            <label class="form-check-label" for="ache">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Are you Above 60?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="above60" id="above60" value="1">
+                                            <label class="form-check-label" for="above60">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="above60" id="above60" value="0">
+                                            <label class="form-check-label" for="above60">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Have you been Abroad?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="abroad" id="abroad" value="1">
+                                            <label class="form-check-label" for="abroad">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="abroad" id="abroad" value="0">
+                                            <label class="form-check-label" for="abroad">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check-inline ">
+                                            <p>Contact with any recent Positive Case?</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="contact" id="contact" value="1">
+                                            <label class="form-check-label" for="contact">Yes</label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="radio" name="contact" id="contact" value="0">
+                                            <label class="form-check-label" for="contact">No</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>                
+                    <center><button type="submit" id="mdlbtn" class="btn btn-primary rounded-pill mt-2">Submit</button></center>
+                      
+                      </form>
+                      
+                      <div class="covidresult">
+                        <p id="prediction"></p>
+                        <button class=" booknow btn btn-primary">Book Now</button>
+                      </div>
+                    </div>
+                      
+                        
+
+                        <script type="text/javascript">
+
+                            $('.modal-title').hide()
+                            $('#mdlform').hide()
+                            $('.close').hide()
+                            $('.modal-header').css({border:0})
+                            $('.covidresult').hide()
+                            $('#proceed').on('click',function(){
+                                $('#cmsg').hide()
+                                $('#mdlform').show()
+                                $('.modal-title').show()
+                                $('.close').show()
+                                $('.modal-header').css({})
+                            })
+                            $('#mdlform').on('submit',function(f){
+                                f.preventDefault();
+                  
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "{% url 'userside' %}",
+                                    data: {
+                                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                            gen : $("input[type='radio'][name='gen']:checked").val(),
+                                            cough : $("input[type='radio'][name='cough']:checked").val(),
+                                            fever : $("input[type='radio'][name='fever']:checked").val(),
+                                            sour : $("input[type='radio'][name='sour']:checked").val(),
+                                            breath : $("input[type='radio'][name='breath']:checked").val(),
+                                            ache : $("input[type='radio'][name='ache']:checked").val(),
+                                            above60 : $("input[type='radio'][name='above60']:checked").val(),
+                                            abroad : $("input[type='radio'][name='abroad']:checked").val(),
+                                            contact : $("input[type='radio'][name='contact']:checked").val()
+                  
+                                    }, 
+                                    beforeSend:function(){
+                                        $('#mdlbtn').html('Please Wait...')
+                                        $('#mdlbtn').addClass('disabled')
+                                    },                    
+                                    success: function(pred) {
+                                      console.log(pred)
+                                      if(pred === 'positive'){
+                                        $('.covidresult').show()
+                                        $('#prediction').html('You may be COVID <i class="text-danger">Positive</i>, and hence COVID-19 test will be added to your currently selected tests. click below button to book order now.')
+                                        //   alert('covid 19 will be checked by defualt')
+                                          $("input:checkbox[value='covid 19']").attr('checked', true)
+                                          $('#mdlform').hide()
+                                          $('.booknow').on('click',function(){
+                                              $('#aptform').unbind('submit').submit();
+                                          })
+                                      }else{
+                                        $('#mdlform').hide()
+                                        $('.covidresult').show()
+                                        $('#prediction').html('You are Probabaly <i class="text-success">Negative</i>, Lets book your order right away!')
+                                        $('.booknow').on('click',function(){
+                                              $('#aptform').unbind('submit').submit();
+                                          })
+                                      }
+                                    }
+                                });
+                        }); 
+                          
+                    </script>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            {% endblock %} 

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/dc8b77d22a.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    
+    
+</head>
+<body>
+    <style>
+        @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #fafafa;
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    /* color: #999; */
+}
+
+a,
+a:hover,
+a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.navbar {
+    padding: 15px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 40px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-btn {
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0;
+}
+
+/* ---------------------------------------------------
+    SIDEBAR STYLE
+----------------------------------------------------- */
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: #7386D5;
+    color: #fff;
+    transition: all 0.3s;
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #6d7fcc;
+}
+
+/* #sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #47748b;
+} */
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+
+#sidebar ul li a:hover {
+    color: #7386D5;
+    background: #fff;
+}
+
+#sidebar ul li.active>a,
+a[aria-expanded="true"] {
+    color: #fff;
+    background: #6d7fcc;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: #6d7fcc;
+}
+
+ul.CTAs {
+    padding: 20px;
+}
+
+ul.CTAs a {
+    text-align: center;
+    font-size: 0.9em !important;
+    display: block;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+a.download {
+    background: #fff;
+    color: #7386D5;
+}
+
+a.article,
+a.article:hover {
+    background: #6d7fcc !important;
+    color: #fff !important;
+}
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+
+#content {
+    width: 100%;
+    
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+#sidebarCollapse{
+    display:none;
+}
+/* ---------------------------------------------------
+    MEDIAQUERIES
+----------------------------------------------------- */
+
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+    #sidebarCollapse span {
+        display: none;
+    }
+    #sidebarCollapse{display:block;}
+    .fa-user{font-size: 20px;}
+    h3{font-size: 20px;}
+}
+
+    </style>
+
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fa fa-stethoscope pr-2" aria-hidden="true"></i>OLMS</h3>
+            </div>
+
+            <center class="pt-4">
+                <i class="fa fa-user-circle" style="font-size: 60px;" aria-hidden="true"></i>
+            <h4 class="text-capitalize">{{request.session.userlogged}}</h4>
+            <p class="text-light">{{request.session.useremail}}</p>
+            </center>
+            <hr>
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="{% url 'userside'%}"><i class="fas fa-th-large pr-2" aria-hidden="true"></i>Dashboard</a>
+                </li>
+                
+                <li>
+                    <a href="{%url 'viewtestdetails' %}" role="button" ><i class="fas fa-file-medical-alt pr-2"></i>View Tests Details</a>
+                </li>
+                <li>
+                    <a href="{% url 'appointments' %}"><i class="fas fa-calendar-check pr-2" aria-hidden="true"></i>Book Appointments</a>
+                </li>
+                <li>
+                    <a href="{% url 'apt-history'%}"><i class="fas fa-flask pr-2" aria-hidden="true"></i>Appointment History</a>
+                </li>
+                <li>
+                    <a href=""><i class="fas fa-person-booth pr-2" aria-hidden="true"></i>View Medical Reports</a>
+                </li>
+
+            </ul>
+
+           
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content" style="background-color: rgb(187, 186, 186);">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    
+                    <button type="button" id="sidebarCollapse" class="btn btn-info"  style="background-color: #7386d5;">
+                        <i class="fas fa-align-left"></i>
+                        <span></span>
+                    </button>
+                    <h3 class="pl-3 pt-2" style="color: #7386d5;">Welcome to OLMS</h3>
+                    <div class="float-right" style="color:white; text-decoration: none; list-style-type: none;">
+                        <div class="btn-group">
+                                <!-- ############ settings ######################### -->
+                            <a style="color: rgb(100, 125, 218);" href="" data-toggle='dropdown'><i class="fas fa-user fa-2x"></i></a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a href="{% url 'userlogout' %}" class="dropdown-item">LogOut</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class=" dropdown-item">Settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="pages pr-3 pl-3">
+                {% block body %} {% endblock body %}
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+</body>
+</html>

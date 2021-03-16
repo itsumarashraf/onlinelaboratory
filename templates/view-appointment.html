@@ -1,0 +1,158 @@
+{% extends 'userbase.html' %}
+{% block title %}Appointment History{% endblock title %}
+
+{% block body %}
+<div class="container-fluid  bg-light p-5 mt-3">
+  <div class="row">
+    <div class="col-lg-12">
+      <h4>Details</h4>
+      <hr>
+
+      <style>
+        th {
+          width: 25%;
+          color: rgb(69, 128, 240);
+        }
+      </style>
+      <table class="table table-sm table-bordered table-responsive-lg">
+        <thead>
+          <tr>
+            <th scope="row">Appointment Number</th>
+            <th scope="row">Patient Name</th>
+            <th scope="row">Gender</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.appointmentno}}</td>
+            <td>{{detail.patientname}}</td>
+            <td class="text-capitalize">{{detail.gender}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Address</th>
+            <th scope="row">Email</th>
+            <th scope="row">Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.address}}</td>
+            <td>{{detail.email}}</td>
+            <td>{{detail.mobile}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Date of Birth</th>
+            <th style="color: red;" scope="row">Admin Remark</th>
+            <th style="color: red;" scope="row">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.dateofbirth}}</td>
+            <td class="font-weight-bold">{{status.comment}}</td>
+            <td class="font-weight-bold">{{status}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Order Date</th>
+            <th scope="row">Order Time</th>
+            <th scope="row">Prescription</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.appointmentdate}}</td>
+            <td>{{detail.appointmenttime}}</td>
+            <td><a href="{{url}}" download="{{detail.prescription}}" target="_blank">{{text}}</a></td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row" class="text-light bg-primary">Report</th>
+          </tr>
+        </thead>
+        <tr>
+          <td style="background-color: #ccc20033;"><a href="{{urll}}" download="{{detail.report}}" target="_blank">{{textt}}</a></td>
+        </tr>
+      </table>
+      <br>
+      <div class="row">
+        <div class="col-lg-8">
+          <h4>Test Detail</h4>
+          <hr>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">S.NO</th>
+                <th scope="col">Test Name</th>
+                <th scope="col">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tbody>
+              {% for i in new %}
+              <tr>
+                <th scope="row">{{forloop.counter}}</th>
+                <td>{{i.tname}}</td>
+                <td>{{i.price}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Total</th>
+                <th scope="col">{{amt.amount}}
+                  <!-- <button type="submit" class="btn btn-primary rounded-pill float-right" {{enable}}><i class="fas fa-cart-plus pr-1"></i>Pay</button> -->
+                  <a href="{% url 'checkout' detail.appointmentno %}" class="btn btn-primary rounded-pill float-right {{payenable}}"><i class="fas fa-cart-plus pr-1"></i>Pay</a>
+                </th>
+              </tr>
+            </thead>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-lg-4 mb-4">
+
+          <h4>Payment Status</h4>
+          <hr>
+          {% if s.paymentstatus == True %}
+          <div class="card bg-success">
+            <div class="card-header font-weight-bold text-light  text-center">Payment Success</div>
+            <div class="card-body  text-center">
+              <p class="text-light">You Have Paid this order</p>
+            </div>
+          </div>
+          {% elif s.codstatus == True %}
+          <div class="card" style="background-color: #ffda0a9c;">
+            <div class="card-header font-weight-bold  text-center">Payment selected as COD</div>
+            <div class="card-body  text-center">
+              <p>You have placed this order as COD</p>
+            </div>
+          </div>
+          {% else %}
+          <div class="card" style="background-color: #dae0e59c;">
+            <div class="card-header font-weight-bold  text-center">Payment Not Recived</div>
+            <div class="card-body  text-center">
+              <p>You have not Payed for this order yet</p>
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+
+
+        <!-- ################# form starts here ##################################### -->
+        <form method="POST" action="">
+          {% csrf_token%}
+          <button type="submit" class="btn btn-danger" {{enable}}>Cancel</button>
+          <a href="{% url 'track' detail.appointmentno %}" class="btn btn-primary">Track Order</a>
+      </div>
+    </div>
+  </div>
+
+  {% endblock body %}

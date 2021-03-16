@@ -1,0 +1,44 @@
+{% extends 'payments/paymentbase.html' %}
+
+{% block title%}Payment Failed{% endblock title%}
+
+{% block body %}
+<style>
+    body {
+
+        background-color: #007bff;
+    }
+
+    .j {
+        position: absolute;
+        top: 40%;
+        color: #ffe000;
+        font-weight: bolder;
+    }
+</style>
+<div class="containter">
+    <div class="row">
+        <div class="col-lg-12 text-center j">
+            <i style="color: white;" class="fas fa-exclamation-triangle fa-5x pb-2"></i>
+            <h4>Your Payment Was Unsuccessfull</h4>
+            <a id="redirect" href="{% url 'view-apt' apt %}"></a>
+            <p style="color: white;" id="countdown"></p>
+        </div>
+    </div>
+</div>
+<script>
+    var timeleft = 5;
+    var downloadTimer = setInterval(function () {
+        if (timeleft <= 0) {
+            clearInterval(downloadTimer);
+            document.getElementById("countdown").innerHTML = "Redirecting...";
+            document.getElementById("redirect").click();
+
+        } else {
+            document.getElementById("countdown").innerHTML = "You will be Automatically Redirected in " + timeleft + " seconds";
+        }
+        timeleft -= 1;
+    }, 1000);
+</script>
+
+{% endblock body %}
